@@ -84,7 +84,7 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 
 ### Split view
 
-![Markdown source and live preview side by side](.github/assets/slate-split.png?v=2)
+![Markdown source and live preview side by side]()
 
 ### Editor
 
