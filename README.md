@@ -145,11 +145,10 @@ The tab strip test briefly opens a few windows, so run `make test` in a logged-i
 Sources/          Native AppKit app, document model, editor, tab strip, and preview bridge
 Resources/        Offline HTML/CSS preview, renderer, app icon, and bundle metadata
 Resources/vendor/ markdown-it and its MIT license
-Scripts/          Build, install, package, screenshot, and publishing tools
+Scripts/          Build, install, package, and screenshot tools
 Tests/            File handling, editor rendering, split view, tab strip, and renderer checks
 Examples/         Demo document used for screenshots
-docs/             Launch images, release notes, and social post copy
-.github/workflows/ macOS validation and tagged release builds
+.github/          CI and release workflows, release notes, and README images
 ```
 
 ### CI and releases

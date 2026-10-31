@@ -9,7 +9,7 @@ images = [
     ("Preview", "slate-preview.png", "Rendered Markdown in Slate's dark reading view"),
 ]
 for _, filename, _ in images:
-    if not (root / "docs/images" / filename).is_file():
+    if not (root / ".github/assets" / filename).is_file():
         raise SystemExit(f"Missing app screenshot: {filename}; run make screenshots first.")
 
 readme = root / "README.md"
@@ -19,7 +19,7 @@ before, remainder = content.split(start, 1)
 _, after = remainder.split(end, 1)
 def link(filename):
     # A content hash in the URL makes GitHub fetch each new screenshot instead of a cached one.
-    digest = hashlib.sha256((root / "docs/images" / filename).read_bytes()).hexdigest()[:8]
+    digest = hashlib.sha256((root / ".github/assets" / filename).read_bytes()).hexdigest()[:8]
     return f".github/assets/{filename}?v={digest}"
 
 
