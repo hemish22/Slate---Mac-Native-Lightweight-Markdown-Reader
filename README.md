@@ -62,6 +62,8 @@ This installs to `~/Applications/Slate.app`. To install to `/Applications` inste
 SLATE_INSTALL_DIR=/Applications make install
 ```
 
+To uninstall, quit Slate and delete `Slate.app` from the folder you installed it to (`~/Applications` by default). Slate stores only its preferences, in `~/Library/Preferences/com.hemish.slate.plist`.
+
 No dependency downloads are needed to build the app. Node.js is only needed for the renderer tests.
 
 ### Prebuilt downloads
@@ -107,6 +109,7 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 | Inline code / Link | ⌘E / ⌘K |
 | Undo / Redo | ⌘Z / ⇧⌘Z |
 | Zoom in / out / reset | ⌘+ / ⌘− / ⌘0 |
+| Close window | ⌘W |
 | Fullscreen | ⌃⌘F |
 
 Use the toolbar's outline button to jump to headings. Drag the split divider to change the pane widths, or use the link button to toggle synchronized scrolling. **Help → Welcome to Slate** opens an editable guide.
@@ -147,11 +150,11 @@ docs/             Launch images, release notes, and social post copy
 
 The CI workflow builds the app and runs the tests on macOS for pushes and pull requests. Tags matching `v*` run the release workflow, which tests the code, builds a universal app, and uploads `Slate.zip` and its SHA-256 checksum to a GitHub release.
 
-From a normal authenticated checkout, a maintainer can publish a version with:
+From a normal authenticated checkout, a maintainer can publish a version (here `1.0.3`, after updating `Resources/Info.plist` and `CHANGELOG.md`) with:
 
 ```sh
-git tag v1.0.2
-git push origin v1.0.2
+git tag v1.0.3
+git push origin v1.0.3
 ```
 
 The tag should match the version in `Resources/Info.plist`. Tagged archives are ad hoc signed; automated releases do not perform Developer ID signing or notarization.

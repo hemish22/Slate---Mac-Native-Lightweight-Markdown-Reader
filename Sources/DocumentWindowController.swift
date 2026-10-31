@@ -328,6 +328,9 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         modeControl?.selectedSegment = mode.rawValue
         splitView.adjustSubviews()
         window?.contentView?.layoutSubtreeIfNeeded()
+        // The text view can end up displaced inside its clip view after the
+        // pane is resized, leaving the visible editor blank. Keep it at the origin.
+        if editor.frame.origin != .zero { editor.setFrameOrigin(.zero) }
         if mode == .split { splitView.setPosition(splitView.bounds.width * splitRatio, ofDividerAt: 0) }
         splitView.needsDisplay = true
         if mode != .editor { preview.update(markdown: editor.string) }

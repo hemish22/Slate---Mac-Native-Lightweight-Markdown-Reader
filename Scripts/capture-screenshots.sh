@@ -19,5 +19,5 @@ xcrun swiftc -O -module-name Slate -module-cache-path "$PWD/build/module-cache" 
 codesign --force --sign - "$capture_app"
 if [ "${1:-}" = "--build-only" ]; then exit 0; fi
 printf 'Opening a separate demo window to capture Editor, Preview, and Split.\n'
-"$capture_app/Contents/MacOS/SlateCapture" "$PWD/docs/images" "$PWD/Examples/Slate-Demo.md"
+SLATE_CAPTURE_OUTPUT="$PWD/docs/images" SLATE_CAPTURE_DEMO="$PWD/Examples/Slate-Demo.md" "$capture_app/Contents/MacOS/SlateCapture"
 python3 Scripts/update-screenshots.py

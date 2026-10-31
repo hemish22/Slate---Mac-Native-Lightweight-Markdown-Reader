@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Keep the editor text view at the origin of its scroll view so the editor can no longer appear blank after a layout change.
+- Fix `make screenshots`: pass paths through the environment so AppKit no longer tries to open the output folder, and reset both panes to the top of the document before capture.
+
 ## 1.0.2
 
 - Clear the old divider when switching from Split to Editor or Preview.
