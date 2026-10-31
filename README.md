@@ -84,15 +84,15 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 
 ### Split view
 
-![Markdown source and live preview side by side](.github/assets/slate-split.png)
+![Markdown source and live preview side by side](.github/assets/slate-split.png?v=2)
 
 ### Editor
 
-![Native Markdown editor with line numbers and syntax colors](.github/assets/slate-editor.png)
+![Native Markdown editor with line numbers and syntax colors](.github/assets/slate-editor.png?v=2)
 
 ### Preview
 
-![Rendered Markdown in Slate's dark reading view](.github/assets/slate-preview.png)
+![Rendered Markdown in Slate's dark reading view](.github/assets/slate-preview.png?v=2)
 
 <!-- SCREENSHOTS:END -->
 
