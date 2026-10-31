@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#20212c"/><stop offset="1" stop-color="#13141c"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#9674d7" stop-opacity=".19"/><stop offset="1" stop-color="#9674d7" stop-opacity="0"/></radialGradient>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#353545"/><stop offset="1" stop-color="#242532"/></linearGradient>
+    <linearGradient id="accent" x2="1" y2="1"><stop stop-color="#d7bcff"/><stop offset="1" stop-color="#9c7be4"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <ellipse cx="1260" cy="370" rx="690" ry="680" fill="url(#glow)"/>
+  <path d="M96 200H1504" stroke="#ffffff" stroke-opacity=".09"/>
+  <rect x="96" y="76" width="80" height="80" rx="21" fill="#32313f" stroke="#676071"/>
+  <path d="M115 129V102L127 116L139 102V129M155 102V128M148 122L155 130L162 122" fill="none" stroke="#d7bcff" stroke-width="5" stroke-linejoin="round"/>
+  <text x="196" y="132" fill="#f3effa" font-family="Helvetica Neue,Arial,sans-serif" font-size="53" font-weight="700" letter-spacing="-2">Slate</text>
+  <text x="1504" y="120" text-anchor="end" fill="#a7a0b5" font-family="Helvetica Neue,Arial,sans-serif" font-size="18" letter-spacing="3">BUILT FOR macOS</text>
+  <text x="96" y="331" fill="#d0b2ff" font-family="Helvetica Neue,Arial,sans-serif" font-size="20" letter-spacing="3">NATIVE MARKDOWN READER + EDITOR</text>
+  <text x="91" y="450" fill="#f6f3fb" font-family="Helvetica Neue,Arial,sans-serif" font-size="105" font-weight="700" letter-spacing="-5">A clear view</text>
+  <text x="91" y="562" fill="#f6f3fb" font-family="Helvetica Neue,Arial,sans-serif" font-size="105" font-weight="700" letter-spacing="-5">of your words.</text>
+  <text x="97" y="625" fill="#aaa7ba" font-family="Helvetica Neue,Arial,sans-serif" font-size="27">Open a file. Find your focus. Keep writing.</text>
+  <g transform="translate(1080 271) rotate(8 165 195)">
+    <rect x="-23" y="16" width="340" height="386" rx="31" fill="#1b1c27" stroke="#4d435f" transform="rotate(-15 165 195)"/>
+    <rect width="340" height="386" rx="31" fill="url(#paper)" stroke="#6b5c83"/>
+    <path d="M39 59H301" stroke="#5f5471"/>
+    <circle cx="43" cy="32" r="4" fill="#c099ff"/><circle cx="60" cy="32" r="4" fill="#777087"/><circle cx="77" cy="32" r="4" fill="#777087"/>
+    <text x="39" y="130" font-family="Menlo,monospace" font-size="50" font-weight="700" fill="url(#accent)"># Hello.</text>
+    <rect x="40" y="160" width="245" height="9" rx="4" fill="#a7a1b4" opacity=".75"/>
+    <rect x="40" y="184" width="201" height="9" rx="4" fill="#a7a1b4" opacity=".45"/>
+    <rect x="40" y="225" width="260" height="92" rx="12" fill="#20222b" stroke="#4a4358"/>
+    <text x="59" y="261" font-family="Menlo,monospace" font-size="18" fill="#8cd6a6">let idea =</text>
+    <text x="59" y="290" font-family="Menlo,monospace" font-size="18" fill="#ebc589">&quot;Start small.&quot;</text>
+    <rect x="40" y="344" width="93" height="7" rx="3" fill="#a88acb"/>
+    <rect x="147" y="344" width="153" height="7" rx="3" fill="#777181" opacity=".6"/>
+  </g>
+  <rect x="96" y="703" width="552" height="66" rx="33" fill="#302b3c" stroke="#60516f"/>
+  <text x="177" y="745" text-anchor="middle" fill="#dcc7f7" font-family="Helvetica Neue,Arial,sans-serif" font-size="22" font-weight="500">Editor</text>
+  <path d="M268 724V748M465 724V748" stroke="#71617e"/>
+  <text x="365" y="745" text-anchor="middle" fill="#dcc7f7" font-family="Helvetica Neue,Arial,sans-serif" font-size="22" font-weight="500">Preview</text>
+  <text x="554" y="745" text-anchor="middle" fill="#dcc7f7" font-family="Helvetica Neue,Arial,sans-serif" font-size="22" font-weight="500">Split</text>
+  <text x="97" y="839" fill="#8b859c" font-family="Helvetica Neue,Arial,sans-serif" font-size="19">Swift + AppKit  ·  Live preview  ·  Finder integration</text>
+  <text x="1504" y="839" text-anchor="end" fill="#bbb0ce" font-family="Helvetica Neue,Arial,sans-serif" font-size="19">github.com/hemish22</text>
+</svg>
