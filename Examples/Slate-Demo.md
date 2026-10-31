@@ -8,9 +8,9 @@ Switch between the source and the finished page, or keep them side by side.
 
 | View | Shortcut | Make room for |
 | --- | --- | --- |
-| Editor | ⌘1 | Your next draft |
-| Preview | ⌘2 | A comfortable read |
-| Split | ⌘3 | Both at once |
+| Editor | ⌥1 | Your next draft |
+| Preview | ⌥2 | A comfortable read |
+| Split | ⌥3 | Both at once |
 
 ## The small things, considered.
 
@@ -31,4 +31,4 @@ print(idea)
 - [ ] Give that idea a first draft
 - [ ] Make room for the next one
 
-Use **⌘O** to open a file, **⌘S** to save, and `⌘3` for a fresh perspective.
+Use **⌘O** to open a file, **⌘S** to save, and `⌥3` for a fresh perspective.

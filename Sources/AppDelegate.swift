@@ -5,6 +5,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.appearance = NSAppearance(named: .darkAqua)
         NSDocumentController.shared.autosavingDelay = 2
+        // New documents open as tabs; Slate draws its own tab strip.
+        NSWindow.allowsAutomaticWindowTabbing = true
+        TabStripView.install()
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            DocumentWindowController.handleViewShortcut(event) ? nil : event
+        }
         buildMenu()
     }
 
@@ -56,9 +62,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item("Link", #selector(DocumentWindowController.makeLink(_:)), key: "k", in: format)
 
         let view = submenu("View", in: main)
-        item("Editor", #selector(DocumentWindowController.showEditor(_:)), key: "1", in: view)
-        item("Preview", #selector(DocumentWindowController.showPreview(_:)), key: "2", in: view)
-        item("Split View", #selector(DocumentWindowController.showSplit(_:)), key: "3", in: view)
+        // ⌘1–⌘9 select tabs, so the views use ⌥1–⌥3.
+        item("Editor", #selector(DocumentWindowController.showEditor(_:)), key: "1", modifiers: .option, in: view)
+        item("Preview", #selector(DocumentWindowController.showPreview(_:)), key: "2", modifiers: .option, in: view)
+        item("Split View", #selector(DocumentWindowController.showSplit(_:)), key: "3", modifiers: .option, in: view)
         view.addItem(.separator())
         item("Zoom In", #selector(DocumentWindowController.zoomIn(_:)), key: "+", in: view)
         item("Zoom Out", #selector(DocumentWindowController.zoomOut(_:)), key: "-", in: view)
@@ -73,6 +80,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item("Zoom", #selector(NSWindow.performZoom(_:)), in: window)
         window.addItem(.separator())
         item("Bring All to Front", #selector(NSApplication.arrangeInFront(_:)), in: window)
+        // ⌘1–⌘8 jump to that tab and ⌘9 to the last one, as in browsers. The
+        // items stay hidden to keep the menu short but still answer their keys.
+        for number in 1...9 {
+            let tab = NSMenuItem(title: number == 9 ? "Last Tab" : "Tab \(number)",
+                                 action: #selector(DocumentWindowController.selectTab(_:)), keyEquivalent: "\(number)")
+            tab.keyEquivalentModifierMask = .command
+            tab.tag = number
+            tab.isHidden = true
+            tab.allowsKeyEquivalentWhenHidden = true
+            window.addItem(tab)
+        }
 
         let help = submenu("Help", in: main)
         item("Welcome to Slate", #selector(openWelcome(_:)), in: help, target: self)

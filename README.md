@@ -13,10 +13,11 @@ Read a document, edit its source, or keep both side by side. Slate pairs a nativ
 ## Features
 
 - **Three views:** editor, preview, and a resizable split view. Your selected view is remembered.
+- **Tabs:** files open as tabs in one window by default, shown in the header above the editor and preview. Jump to a tab with ⌘1–⌘9, drag a tab to reorder it, drag it down out of the tab row to give it its own window, or right-click it for Move Tab to New Window and Merge All Windows. **+** opens a new document, and each tab keeps its own editor and preview.
 - **Live preview:** headings, tables, nested lists, task lists, links, images, blockquotes, fenced code, and strikethrough.
 - **Native editing:** line numbers, syntax colors, find and replace, undo/redo, and Markdown formatting shortcuts.
 - **Finder integration:** open `.md`, `.markdown`, `.mdown`, `.mkd`, and `.mkdn` files directly.
-- **Document tools:** autosave for saved files, Save As, Revert to Saved, recent files, multiple windows, native window tabs, and fullscreen.
+- **Document tools:** autosave for saved files, Save As, Revert to Saved, recent files, tabs and multiple windows, and fullscreen.
 - **Reading and navigation:** heading outline, optional synchronized scrolling, zoom, word count, reading time, and cursor position.
 - **Plain files:** UTF-8 and Unicode, preserving an existing BOM and LF, CRLF, or CR line endings.
 
@@ -84,15 +85,15 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 
 ### Split view
 
-![Markdown source and live preview side by side](.github/assets/slate-split.png?v=2)
+![Markdown source and live preview side by side](.github/assets/slate-split.png?v=4517659b)
 
 ### Editor
 
-![Native Markdown editor with line numbers and syntax colors](.github/assets/slate-editor.png?v=2)
+![Native Markdown editor with line numbers and syntax colors](.github/assets/slate-editor.png?v=b463aace)
 
 ### Preview
 
-![Rendered Markdown in Slate's dark reading view](.github/assets/slate-preview.png?v=2)
+![Rendered Markdown in Slate's dark reading view](.github/assets/slate-preview.png?v=dd62b186)
 
 <!-- SCREENSHOTS:END -->
 
@@ -103,14 +104,19 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 | New document | ⌘N |
 | Open / Save | ⌘O / ⌘S |
 | Save As | ⇧⌘S |
-| Editor / Preview / Split | ⌘1 / ⌘2 / ⌘3 |
+| Editor / Preview / Split | ⌥1 / ⌥2 / ⌥3 |
+| Go to tab 1–8 / last tab | ⌘1–⌘8 / ⌘9 |
 | Find and replace | ⌘F |
 | Bold / Italic | ⌘B / ⌘I |
 | Inline code / Link | ⌘E / ⌘K |
 | Undo / Redo | ⌘Z / ⇧⌘Z |
 | Zoom in / out / reset | ⌘+ / ⌘− / ⌘0 |
-| Close window | ⌘W |
+| Close tab | ⌘W |
 | Fullscreen | ⌃⌘F |
+
+⌥1–⌥3 work from both the editor and the preview. Because Slate uses them, they no longer type the characters ⌥ + number normally produces (for example ¡ ™ £ on a US keyboard, or # with ⌥3 on a UK keyboard).
+
+Click **+** in the tab row for a new document. Opening a file replaces the empty Untitled document Slate shows at launch.
 
 Use the toolbar's outline button to jump to headings. Drag the split divider to change the pane widths, or use the link button to toggle synchronized scrolling. **Help → Welcome to Slate** opens an editable guide.
 
@@ -119,7 +125,7 @@ Use the toolbar's outline button to jump to headings. Drag the split divider to 
 ```sh
 make build        # Build build/Slate.app for this Mac
 make run          # Build and launch
-make test         # File handling, AppKit rendering, and Markdown tests
+make test         # File handling, AppKit rendering, tab strip, and Markdown tests
 make package      # Build build/Slate.zip and build/SHA256SUMS
 make screenshots  # Capture all three views on a macOS desktop
 make clean        # Remove generated build files
@@ -131,16 +137,16 @@ To build a universal app for Apple Silicon and Intel:
 SLATE_BUILD_ARCHS="arm64 x86_64" make package
 ```
 
-The test command requires Node.js. If you already use Homebrew, you can install it with `brew install node`; otherwise use the installer from [nodejs.org](https://nodejs.org/).
+The tab strip test briefly opens a few windows, so run `make test` in a logged-in macOS desktop session. The test command also requires Node.js. If you already use Homebrew, you can install it with `brew install node`; otherwise use the installer from [nodejs.org](https://nodejs.org/).
 
 ### Project layout
 
 ```text
-Sources/          Native AppKit app, document model, editor, and preview bridge
+Sources/          Native AppKit app, document model, editor, tab strip, and preview bridge
 Resources/        Offline HTML/CSS preview, renderer, app icon, and bundle metadata
 Resources/vendor/ markdown-it and its MIT license
 Scripts/          Build, install, package, screenshot, and publishing tools
-Tests/            File handling, editor rendering, split view, and renderer checks
+Tests/            File handling, editor rendering, split view, tab strip, and renderer checks
 Examples/         Demo document used for screenshots
 docs/             Launch images, release notes, and social post copy
 .github/workflows/ macOS validation and tagged release builds

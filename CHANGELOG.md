@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- ⌘1–⌘8 select tabs 1–8 and ⌘9 the last tab; Editor / Preview / Split move to ⌥1 / ⌥2 / ⌥3.
+- Open files as tabs in one window by default, shown as rounded tabs in the header instead of the grey system tab bar. Tabs can be reordered, dragged out into their own window, closed, or merged back; **+** adds a new document.
+- Replace the two per-pane headers with one shared header; the separate "Preview …" header is gone.
+- Opening a file replaces the empty Untitled document shown at launch.
+- Add an in-process test for the tab strip.
 - Keep the editor text view at the origin of its scroll view so the editor can no longer appear blank after a layout change.
 - Fix `make screenshots`: pass paths through the environment so AppKit no longer tries to open the output folder, and reset both panes to the top of the document before capture.
 

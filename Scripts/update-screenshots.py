@@ -1,4 +1,5 @@
 """Embed screenshots only after all three real app exports exist."""
+import hashlib
 from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
@@ -16,6 +17,12 @@ content = readme.read_text()
 start, end = "<!-- SCREENSHOTS:START -->", "<!-- SCREENSHOTS:END -->"
 before, remainder = content.split(start, 1)
 _, after = remainder.split(end, 1)
-gallery = "\n\n".join(f"### {title}\n\n![{alt}](.github/assets/{filename})" for title, filename, alt in images)
+def link(filename):
+    # A content hash in the URL makes GitHub fetch each new screenshot instead of a cached one.
+    digest = hashlib.sha256((root / "docs/images" / filename).read_bytes()).hexdigest()[:8]
+    return f".github/assets/{filename}?v={digest}"
+
+
+gallery = "\n\n".join(f"### {title}\n\n![{alt}]({link(filename)})" for title, filename, alt in images)
 readme.write_text(before + start + "\n\n" + gallery + "\n\n" + end + after)
 print("README updated with all three app screenshots.")

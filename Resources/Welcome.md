@@ -8,9 +8,9 @@ Choose a view in the toolbar, or use a shortcut:
 
 | View | Shortcut | Best for |
 | --- | --- | --- |
-| Editor | ⌘1 | Focused writing |
-| Preview | ⌘2 | Comfortable reading |
-| Split | ⌘3 | Writing and reading together |
+| Editor | ⌥1 | Focused writing |
+| Preview | ⌥2 | Comfortable reading |
+| Split | ⌥3 | Writing and reading together |
 
 Drag the divider to give either pane more room. The **link button** keeps both panes scrolling together.
 

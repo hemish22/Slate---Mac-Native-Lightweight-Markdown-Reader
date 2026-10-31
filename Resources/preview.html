@@ -22,7 +22,7 @@ blockquote{margin:20px 0;padding:2px 20px;border-left:3px solid var(--accent);co
 <script>
 const content = document.getElementById('content');
 let muteScrollUntil = 0;
-const empty = '<div class="empty"><div><div class="symbol">m↓</div><h1>A clear view of your words.</h1><p>Open a Markdown file, or start writing.<br>Your preview takes shape as you type.</p><p class="hint"><kbd>⌘ O</kbd> Open file &nbsp; <kbd>⌘ 3</kbd> Split view</p></div></div>';
+const empty = '<div class="empty"><div><div class="symbol">m↓</div><h1>A clear view of your words.</h1><p>Open a Markdown file, or start writing.<br>Your preview takes shape as you type.</p><p class="hint"><kbd>⌘ O</kbd> Open file &nbsp; <kbd>⌥ 3</kbd> Split view</p></div></div>';
 window.updateMarkdown = function (source) {
   const y = window.scrollY;
   muteScrollUntil = performance.now() + 120;

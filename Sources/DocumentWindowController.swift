@@ -10,8 +10,8 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
     private let splitView = PaneSplitView()
     private let editorPane = ColorView(Theme.background)
     private let previewPane = ColorView(Theme.background)
-    private let editorTitle = Theme.label("Untitled.md", size: 12, color: Theme.text)
-    private let previewTitle = Theme.label("Preview", size: 12, color: Theme.text)
+    let tabStrip = TabStripView()
+    private let headerHint = Theme.label("MARKDOWN", size: 9, color: Theme.muted.withAlphaComponent(0.65))
     private let documentStats = Theme.label("")
     private let cursorStatus = Theme.label("")
     private let saveStatus = Theme.label("", color: Theme.green)
@@ -20,7 +20,7 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
     private var renderWork: DispatchWorkItem?
     private var statsWork: DispatchWorkItem?
     private var scrollObservation: NSObjectProtocol?
-    private var mode: ViewMode = .split
+    private(set) var mode: ViewMode = .split
     private var zoom = 1.0
     private var synced = true
     private var handlingScroll = false
@@ -36,6 +36,7 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         window.backgroundColor = Theme.background
         window.titlebarAppearsTransparent = true
         window.tabbingMode = .preferred
+        window.tabbingIdentifier = NSWindow.TabbingIdentifier("SlateDocument")
         window.setFrameAutosaveName("SlateDocument")
         window.center()
         super.init(window: window)
@@ -120,8 +121,27 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         content.addSubview(splitView)
         splitView.translatesAutoresizingMaskIntoConstraints = false
 
-        setupPane(editorPane, title: editorTitle, symbol: "chevron.left.forwardslash.chevron.right", accessory: "MARKDOWN", body: editorScroll)
-        setupPane(previewPane, title: previewTitle, symbol: "doc.richtext", accessory: "LIVE PREVIEW", body: preview.webView)
+        embed(editorScroll, in: editorPane)
+        embed(preview.webView, in: previewPane)
+
+        // One shared header: document tabs on the left, the pane kind on the right.
+        let header = ColorView(Theme.chrome)
+        content.addSubview(header)
+        header.translatesAutoresizingMaskIntoConstraints = false
+        headerHint.font = .systemFont(ofSize: 9, weight: .medium)
+        tabStrip.owner = window
+        for view in [tabStrip, headerHint] { header.addSubview(view); view.translatesAutoresizingMaskIntoConstraints = false }
+        headerHint.setContentCompressionResistancePriority(.required, for: .horizontal)
+        updateHeader()
+        NSLayoutConstraint.activate([
+            header.topAnchor.constraint(equalTo: content.topAnchor), header.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            header.trailingAnchor.constraint(equalTo: content.trailingAnchor), header.heightAnchor.constraint(equalToConstant: 37),
+            tabStrip.leadingAnchor.constraint(equalTo: header.leadingAnchor), tabStrip.topAnchor.constraint(equalTo: header.topAnchor),
+            tabStrip.bottomAnchor.constraint(equalTo: header.bottomAnchor),
+            headerHint.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -16), headerHint.centerYAnchor.constraint(equalTo: header.centerYAnchor),
+            tabStrip.trailingAnchor.constraint(equalTo: headerHint.leadingAnchor, constant: -8),
+            splitView.topAnchor.constraint(equalTo: header.bottomAnchor)
+        ])
 
         let status = ColorView(Theme.chrome)
         content.addSubview(status)
@@ -133,7 +153,6 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         right.spacing = 12
         for stack in [left, right] { status.addSubview(stack); stack.translatesAutoresizingMaskIntoConstraints = false }
         NSLayoutConstraint.activate([
-            splitView.topAnchor.constraint(equalTo: content.topAnchor),
             splitView.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             splitView.trailingAnchor.constraint(equalTo: content.trailingAnchor),
             splitView.bottomAnchor.constraint(equalTo: status.topAnchor),
@@ -157,27 +176,18 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         return view
     }
 
-    private func setupPane(_ pane: NSView, title: NSTextField, symbol: String, accessory: String, body: NSView) {
-        let header = ColorView(Theme.chrome)
-        let image = NSImageView(image: NSImage(systemSymbolName: symbol, accessibilityDescription: accessory)!)
-        image.contentTintColor = Theme.accent
-        let hint = Theme.label(accessory, size: 9, color: Theme.muted.withAlphaComponent(0.65))
-        hint.font = .systemFont(ofSize: 9, weight: .medium)
-        for view in [header, body] { pane.addSubview(view); view.translatesAutoresizingMaskIntoConstraints = false }
-        for view in [image, title, hint] { header.addSubview(view); view.translatesAutoresizingMaskIntoConstraints = false }
-        title.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        hint.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    private func embed(_ body: NSView, in pane: NSView) {
+        pane.addSubview(body)
+        body.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: pane.topAnchor), header.leadingAnchor.constraint(equalTo: pane.leadingAnchor),
-            header.trailingAnchor.constraint(equalTo: pane.trailingAnchor), header.heightAnchor.constraint(equalToConstant: 37),
-            image.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 16), image.widthAnchor.constraint(equalToConstant: 15),
-            image.centerYAnchor.constraint(equalTo: header.centerYAnchor),
-            title.leadingAnchor.constraint(equalTo: image.trailingAnchor, constant: 9), title.centerYAnchor.constraint(equalTo: header.centerYAnchor),
-            hint.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -16), hint.centerYAnchor.constraint(equalTo: header.centerYAnchor),
-            title.trailingAnchor.constraint(lessThanOrEqualTo: hint.leadingAnchor, constant: -16),
-            body.topAnchor.constraint(equalTo: header.bottomAnchor), body.leadingAnchor.constraint(equalTo: pane.leadingAnchor),
+            body.topAnchor.constraint(equalTo: pane.topAnchor), body.leadingAnchor.constraint(equalTo: pane.leadingAnchor),
             body.trailingAnchor.constraint(equalTo: pane.trailingAnchor), body.bottomAnchor.constraint(equalTo: pane.bottomAnchor)
         ])
+    }
+
+    /// The right-hand label follows the visible pane.
+    private func updateHeader() {
+        headerHint.stringValue = mode == .preview ? "LIVE PREVIEW" : "MARKDOWN"
     }
 
     private func setupToolbar() {
@@ -214,7 +224,7 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
             for (index, symbol) in ["chevron.left.forwardslash.chevron.right", "doc.richtext", "rectangle.split.2x1"].enumerated() {
                 modeControl.setImage(NSImage(systemSymbolName: symbol, accessibilityDescription: nil), forSegment: index)
                 modeControl.setWidth(94, forSegment: index)
-                modeControl.setToolTip(["Editor only (⌘1)", "Preview only (⌘2)", "Split view (⌘3)"][index], forSegment: index)
+                modeControl.setToolTip(["Editor only (⌥1)", "Preview only (⌥2)", "Split view (⌥3)"][index], forSegment: index)
             }
             modeControl.setAccessibilityLabel("Document view")
             item.label = "View"
@@ -247,15 +257,43 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
 
     func fileLocationChanged() {
         guard let document = markdownDocument else { return }
-        editorTitle.stringValue = document.fileURL?.lastPathComponent ?? "Untitled.md"
-        previewTitle.stringValue = "Preview \(document.fileURL?.lastPathComponent ?? "Untitled.md")"
+        tabStrip.reload()
         preview.assets.directory = document.fileURL?.deletingLastPathComponent()
         preview.update(markdown: document.markdown)
         updateSaveStatus()
     }
 
+    private var joinedTabGroup = false
+
+    /// New documents open as tabs of the last active Slate window. A tab can
+    /// still be dragged out (or moved) into its own window afterwards.
+    override func showWindow(_ sender: Any?) {
+        var replaced: NSDocument?
+        if !joinedTabGroup, let window {
+            joinedTabGroup = true
+            if (window.tabGroup?.windows.count ?? 1) <= 1, let host = TabStripView.hostWindow(excluding: window) {
+                // Opening a file replaces the empty Untitled document Slate shows at launch.
+                if let hostDocument = host.windowController?.document as? MarkdownDocument, markdownDocument?.fileURL != nil,
+                   hostDocument.fileURL == nil, !hostDocument.isDocumentEdited, hostDocument.markdown.isEmpty,
+                   (host.tabGroup?.windows.count ?? 1) <= 1 {
+                    window.setFrame(host.frame, display: false)
+                    replaced = hostDocument
+                } else {
+                    host.addTabbedWindow(window, ordered: .above)
+                }
+            }
+        }
+        super.showWindow(sender)
+        replaced?.close()
+        TabStripView.refreshAll()
+    }
+
+    /// The label shown on this window's tab.
+    var tabTitle: String { markdownDocument?.fileURL?.lastPathComponent ?? "Untitled.md" }
+
     override func synchronizeWindowTitleWithDocumentName() {
         super.synchronizeWindowTitleWithDocumentName()
+        TabStripView.refreshAll()
         updateSaveStatus()
     }
 
@@ -314,6 +352,33 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
     @objc func showPreview(_ sender: Any?) { setMode(.preview) }
     @objc func showSplit(_ sender: Any?) { setMode(.split) }
 
+    /// ⌥1 / ⌥2 / ⌥3 switch to Editor / Preview / Split. AppKit only offers menu
+    /// key equivalents for presses that include ⌘ or ⌃, so a bare ⌥ + number
+    /// would reach the editor as typed text; an app-level key monitor calls this
+    /// first. Key codes are the physical 1, 2, 3 keys, so any layout works.
+    static func handleViewShortcut(_ event: NSEvent) -> Bool {
+        guard event.type == .keyDown,
+              event.modifierFlags.intersection([.command, .option, .control, .shift]) == .option else { return false }
+        let modes: [UInt16: ViewMode] = [18: .editor, 19: .preview, 20: .split]
+        guard let mode = modes[event.keyCode],
+              let controller = (event.window ?? NSApp.keyWindow)?.windowController as? DocumentWindowController else { return false }
+        controller.setMode(mode)
+        return true
+    }
+
+    /// ⌘1–⌘8 select that tab; ⌘9 selects the last tab (menu item tag = number).
+    @objc func selectTab(_ sender: NSMenuItem) {
+        guard let window else { return }
+        let tabs = window.tabGroup?.windows ?? [window]
+        guard !tabs.isEmpty else { return }
+        let index = sender.tag == 9 ? tabs.count - 1 : sender.tag - 1
+        guard index >= 0, index < tabs.count else { return }
+        let target = tabs[index]
+        window.tabGroup?.selectedWindow = target
+        target.makeKeyAndOrderFront(nil)
+        TabStripView.refreshAll()
+    }
+
     private func setMode(_ next: ViewMode) {
         if mode == .split && splitView.bounds.width > 0 { splitRatio = editorPane.frame.width / splitView.bounds.width }
         mode = next
@@ -325,6 +390,7 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         splitView.showsDivider = mode == .split
         editorPane.isHidden = mode == .preview
         previewPane.isHidden = mode == .editor
+        updateHeader()
         modeControl?.selectedSegment = mode.rawValue
         splitView.adjustSubviews()
         window?.contentView?.layoutSubtreeIfNeeded()
