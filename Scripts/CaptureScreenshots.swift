@@ -6,14 +6,16 @@ import WebKit
 @main
 enum CaptureMain {
     static func main() {
-        guard CommandLine.arguments.count == 3 else {
-            fputs("Usage: SlateCapture OUTPUT_DIRECTORY DEMO_MARKDOWN\n", stderr)
+        // Paths come from the environment, not argv: AppKit treats path
+        // arguments as documents to open and shows "cannot open folder" errors.
+        let environment = ProcessInfo.processInfo.environment
+        guard let output = environment["SLATE_CAPTURE_OUTPUT"], let demo = environment["SLATE_CAPTURE_DEMO"] else {
+            fputs("Usage: SLATE_CAPTURE_OUTPUT=DIR SLATE_CAPTURE_DEMO=FILE SlateCapture\n", stderr)
             exit(1)
         }
         let app = NSApplication.shared
         app.setActivationPolicy(.regular)
-        let delegate = CaptureDelegate(output: URL(fileURLWithPath: CommandLine.arguments[1]),
-                                       demo: URL(fileURLWithPath: CommandLine.arguments[2]))
+        let delegate = CaptureDelegate(output: URL(fileURLWithPath: output), demo: URL(fileURLWithPath: demo))
         app.delegate = delegate
         app.run()
         withExtendedLifetime(delegate) {}
@@ -35,6 +37,10 @@ final class CaptureDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
             NSApp.appearance = NSAppearance(named: .darkAqua)
+            // Both panes must start at the top. Synchronized scrolling races
+            // with the programmatic reset and leaves one pane scrolled away.
+            // This capture app has its own bundle ID, so real prefs are untouched.
+            UserDefaults.standard.set(false, forKey: "syncedScrolling")
             try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
             let document = MarkdownDocument()
             try document.read(from: Data(contentsOf: demo), ofType: "net.daringfireball.markdown")
@@ -69,11 +75,26 @@ final class CaptureDelegate: NSObject, NSApplicationDelegate {
         case 1: controller.showEditor(nil)
         default: controller.showPreview(nil)
         }
+        resetScroll()
+        // Layout and synchronized scrolling settle asynchronously after a mode
+        // change, so reset again just before the snapshot to guarantee both
+        // panes start at the top of the document.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            self.resetScroll()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.capture() }
+        }
+    }
+
+    private func resetScroll() {
+        guard let controller else { return }
         controller.editor.setSelectedRange(NSRange(location: 0, length: 0))
-        controller.editorScroll.contentView.scroll(to: .zero)
+        // Scroll to the topmost position AppKit allows rather than literal (0, 0);
+        // with the line-number ruler the natural origin is not always zero.
+        let clip = controller.editorScroll.contentView
+        let top = clip.constrainBoundsRect(NSRect(origin: NSPoint(x: -10_000, y: -10_000), size: clip.bounds.size)).origin
+        clip.scroll(to: NSPoint(x: top.x, y: top.y))
         controller.editorScroll.reflectScrolledClipView(controller.editorScroll.contentView)
         controller.preview.scroll(to: 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { self.capture() }
     }
 
     private func capture() {
