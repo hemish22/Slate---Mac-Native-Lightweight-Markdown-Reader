@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src slate-asset: https: http: data:; base-uri 'none'; form-action 'none'; connect-src 'none';">
+<title>Markdown preview</title>
+<style>
+:root{color-scheme:dark;--bg:#272934;--text:#e7e7ee;--muted:#9295a8;--line:#484a58;--accent:#c099ff}
+*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:auto}body{margin:0;color:var(--text);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;overflow-wrap:break-word}
+article{max-width:880px;margin:0 auto;padding:32px 48px 100px;min-height:100vh}article>:first-child{margin-top:0}
+h1,h2,h3,h4,h5,h6{line-height:1.3;font-weight:650;letter-spacing:-.025em;color:#f3f3f7;scroll-margin-top:28px}
+h1{font-size:30px;margin:0 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}h2{font-size:23px;margin:32px 0 16px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:18px;margin:26px 0 14px}h4{font-size:16px}h5,h6{font-size:15px}
+p{margin:0 0 18px}a{color:#bca2ff;text-decoration:none}a:hover{text-decoration:underline}strong{font-weight:700}ul,ol{padding-left:28px;margin:14px 0 20px}li{margin:3px 0}li>p{margin:8px 0}li::marker{color:#c3c2d0}
+code{font: .9em/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:#41414d;color:#e8bf79;border-radius:4px;padding:2px 5px}pre{position:relative;background:#20212b;border:1px solid #393b49;border-radius:8px;padding:18px 20px;overflow:auto;margin:20px 0}pre code{background:none;color:#b3dbbd;padding:0;font-size:12.5px;white-space:pre}
+blockquote{margin:20px 0;padding:2px 20px;border-left:3px solid var(--accent);color:#b4b4c6}blockquote p:last-child{margin-bottom:0}hr{border:0;border-top:1px solid var(--line);margin:30px 0}table{display:block;width:max-content;max-width:100%;overflow:auto;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{padding:9px 14px;border:1px solid var(--line);text-align:left}th{background:#30323f;font-weight:600}tr:nth-child(even){background:#2b2d39}img{max-width:100%;height:auto;border-radius:6px}del{color:var(--muted)}input[type=checkbox]{accent-color:var(--accent)}::selection{background:#665084;color:white}
+.empty{display:flex;min-height:75vh;align-items:center;justify-content:center;text-align:center}.empty .symbol{font-size:46px;line-height:1;color:var(--accent);font-weight:500;letter-spacing:-5px;margin-bottom:22px}.empty h1{border:0;font-size:28px;margin:0 0 8px;padding:0}.empty p{color:var(--muted);font-size:14px;line-height:1.8}.empty kbd{font:11px ui-monospace,monospace;border:1px solid #454653;padding:3px 5px;border-radius:4px;color:#cac8d8}.empty .hint{margin-top:25px;font-size:12px;color:#787c91}
+@media(max-width:550px){article{padding:26px 28px 70px}h1{font-size:26px}h2{font-size:21px}}
+@media print{html,body{background:white;color:#222}h1,h2,h3,h4,h5,h6{color:#111}article{max-width:none;padding:0}pre,code,th{background:#f5f5f5;color:#333}a{color:#555}}
+.task-list-item{list-style-type:none}.task-list-item>input[type=checkbox]{margin-left:-21px;margin-right:7px;opacity:1;vertical-align:middle}
+</style>
+<script src="vendor/markdown-it.min.js"></script><script src="renderer.js"></script>
+</head><body><article id="content"></article>
+<script>
+const content = document.getElementById('content');
+let muteScrollUntil = 0;
+const empty = '<div class="empty"><div><div class="symbol">m↓</div><h1>A clear view of your words.</h1><p>Open a Markdown file, or start writing.<br>Your preview takes shape as you type.</p><p class="hint"><kbd>⌘ O</kbd> Open file &nbsp; <kbd>⌘ 3</kbd> Split view</p></div></div>';
+window.updateMarkdown = function (source) {
+  const y = window.scrollY;
+  muteScrollUntil = performance.now() + 120;
+  content.innerHTML = source.trim() ? window.slateRender(source) : empty;
+  for (const element of content.querySelectorAll('img[src],a[href]')) {
+    const attribute = element.tagName === 'IMG' ? 'src' : 'href';
+    const value = element.getAttribute(attribute);
+    if (value && !value.startsWith('#') && !/^[a-z][a-z0-9+.-]*:/i.test(value) && !value.startsWith('//')) {
+      element.setAttribute(attribute, 'slate-asset://document/' + value.replace(/^\.\//, ''));
+    }
+  }
+  for (const heading of content.querySelectorAll('h1,h2,h3,h4,h5,h6')) {
+    const base = heading.textContent.toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').trim().replace(/\s+/g, '-');
+    let id = base, n = 1;
+    while (document.getElementById(id)) id = base + '-' + n++;
+    heading.id = id;
+  }
+  window.scrollTo(0, y);
+};
+window.scrollToFraction = function (fraction) {
+  muteScrollUntil = performance.now() + 120;
+  window.scrollTo(0, fraction * Math.max(0, document.documentElement.scrollHeight - innerHeight));
+};
+window.jumpToLine = function (line) {
+  const blocks = [...content.querySelectorAll('[data-source-line]')];
+  const block = blocks.find(block => Number(block.dataset.sourceLine) >= line) || blocks.at(-1);
+  if (block) block.scrollIntoView({block:'start'});
+};
+let scrollQueued = false;
+window.addEventListener('scroll', function () {
+  if (scrollQueued || performance.now() < muteScrollUntil) return;
+  scrollQueued = true;
+  requestAnimationFrame(function () {
+    scrollQueued = false;
+    if (performance.now() < muteScrollUntil) return;
+    const height = document.documentElement.scrollHeight - innerHeight;
+    window.webkit?.messageHandlers.scroll.postMessage(height > 0 ? scrollY / height : 0);
+  });
+}, {passive:true});
+window.updateMarkdown('');
+</script></body></html>
