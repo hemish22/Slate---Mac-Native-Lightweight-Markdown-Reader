@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add File → Export as PDF… (⇧⌘E) and Print… (⌘P). Both render the document with a light print layout: white pages, readable code blocks, tables that no longer clip, and wrapped long code lines.
 - ⌘1–⌘8 select tabs 1–8 and ⌘9 the last tab; Editor / Preview / Split move to ⌥1 / ⌥2 / ⌥3.
 - Open files as tabs in one window by default, shown as rounded tabs in the header instead of the grey system tab bar. Tabs can be reordered, dragged out into their own window, closed, or merged back; **+** adds a new document.
 - Replace the two per-pane headers with one shared header; the separate "Preview …" header is gone.

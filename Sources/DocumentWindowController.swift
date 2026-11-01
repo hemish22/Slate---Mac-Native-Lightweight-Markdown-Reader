@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 
 enum ViewMode: Int { case editor, preview, split }
 
@@ -515,6 +516,42 @@ final class DocumentWindowController: NSWindowController, NSToolbarDelegate, NST
         editor.scrollRangeToVisible(NSRange(location: location, length: 0))
         handlingScroll = false
         preview.jump(to: sender.tag)
+    }
+
+    /// The file name a PDF of this document gets by default.
+    var pdfName: String { ((tabTitle as NSString).deletingPathExtension) + ".pdf" }
+
+    @objc func exportPDF(_ sender: Any?) {
+        guard let window else { return }
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.pdf]
+        panel.nameFieldStringValue = pdfName
+        panel.canCreateDirectories = true
+        if let folder = markdownDocument?.fileURL?.deletingLastPathComponent() { panel.directoryURL = folder }
+        panel.beginSheetModal(for: window) { [weak self] response in
+            guard response == .OK, let url = panel.url, let self else { return }
+            // Let the save sheet finish closing before the export starts.
+            DispatchQueue.main.async { self.exportPDF(to: url) }
+        }
+    }
+
+    /// Writes the current text to `url` as a paginated PDF.
+    func exportPDF(to url: URL, completion: ((Bool) -> Void)? = nil) {
+        PDFExporter.run(markdown: editor.string, directory: preview.assets.directory, title: tabTitle,
+                        output: .file(url), parent: window) { [weak self] success in
+            if !success, completion == nil, let window = self?.window {
+                let alert = NSAlert()
+                alert.messageText = "Couldn’t export “\(url.lastPathComponent)”."
+                alert.informativeText = "Check that you can write to the folder, then try again."
+                alert.beginSheetModal(for: window)
+            }
+            completion?(success)
+        }
+    }
+
+    @objc func printMarkdown(_ sender: Any?) {
+        PDFExporter.run(markdown: editor.string, directory: preview.assets.directory, title: tabTitle,
+                        output: .printPanel, parent: window)
     }
 
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {

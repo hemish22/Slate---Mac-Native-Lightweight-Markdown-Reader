@@ -17,6 +17,7 @@ Read a document, edit its source, or keep both side by side. Slate pairs a nativ
 - **Live preview:** headings, tables, nested lists, task lists, links, images, blockquotes, fenced code, and strikethrough.
 - **Native editing:** line numbers, syntax colors, find and replace, undo/redo, and Markdown formatting shortcuts.
 - **Finder integration:** open `.md`, `.markdown`, `.mdown`, `.mkd`, and `.mkdn` files directly.
+- **PDF export and printing:** File → Export as PDF… saves the rendered document as a paginated PDF with a clean, light print layout. Print… sends the same layout to a printer.
 - **Document tools:** autosave for saved files, Save As, Revert to Saved, recent files, tabs and multiple windows, and fullscreen.
 - **Reading and navigation:** heading outline, optional synchronized scrolling, zoom, word count, reading time, and cursor position.
 - **Plain files:** UTF-8 and Unicode, preserving an existing BOM and LF, CRLF, or CR line endings.
@@ -104,6 +105,7 @@ To make Slate the default, select a `.md` file, press **⌘I**, select Slate und
 | New document | ⌘N |
 | Open / Save | ⌘O / ⌘S |
 | Save As | ⇧⌘S |
+| Export as PDF / Print | ⇧⌘E / ⌘P |
 | Editor / Preview / Split | ⌥1 / ⌥2 / ⌥3 |
 | Go to tab 1–8 / last tab | ⌘1–⌘8 / ⌘9 |
 | Find and replace | ⌘F |
@@ -125,7 +127,7 @@ Use the toolbar's outline button to jump to headings. Drag the split divider to 
 ```sh
 make build        # Build build/Slate.app for this Mac
 make run          # Build and launch
-make test         # File handling, AppKit rendering, tab strip, and Markdown tests
+make test         # File handling, AppKit rendering, tab strip, PDF export, and Markdown tests
 make package      # Build build/Slate.zip and build/SHA256SUMS
 make screenshots  # Capture all three views on a macOS desktop
 make clean        # Remove generated build files
@@ -137,16 +139,16 @@ To build a universal app for Apple Silicon and Intel:
 SLATE_BUILD_ARCHS="arm64 x86_64" make package
 ```
 
-The tab strip test briefly opens a few windows, so run `make test` in a logged-in macOS desktop session. The test command also requires Node.js. If you already use Homebrew, you can install it with `brew install node`; otherwise use the installer from [nodejs.org](https://nodejs.org/).
+The tab strip and PDF export tests briefly open a few windows, so run `make test` in a logged-in macOS desktop session. The test command also requires Node.js. If you already use Homebrew, you can install it with `brew install node`; otherwise use the installer from [nodejs.org](https://nodejs.org/).
 
 ### Project layout
 
 ```text
-Sources/          Native AppKit app, document model, editor, tab strip, and preview bridge
+Sources/          Native AppKit app, document model, editor, tab strip, PDF export, and preview bridge
 Resources/        Offline HTML/CSS preview, renderer, app icon, and bundle metadata
 Resources/vendor/ markdown-it and its MIT license
 Scripts/          Build, install, package, and screenshot tools
-Tests/            File handling, editor rendering, split view, tab strip, and renderer checks
+Tests/            File handling, editor rendering, split view, tab strip, PDF export, and renderer checks
 Examples/         Demo document used for screenshots
 .github/          CI and release workflows, release notes, and README images
 ```

@@ -17,5 +17,9 @@ xcrun swiftc -module-name Slate -module-cache-path "$PWD/build/module-cache" \
   -framework AppKit -framework WebKit -framework UniformTypeIdentifiers \
   "${tab_sources[@]}" Tests/TabStripTests.swift -o build/tab-strip-tests
 build/tab-strip-tests -ApplePersistenceIgnoreState YES
+xcrun swiftc -module-name Slate -module-cache-path "$PWD/build/module-cache" \
+  -framework AppKit -framework WebKit -framework UniformTypeIdentifiers -framework PDFKit \
+  "${tab_sources[@]}" Tests/PDFExportTests.swift -o build/pdf-export-tests
+build/pdf-export-tests -ApplePersistenceIgnoreState YES
 node Tests/renderer.test.cjs
 plutil -lint Resources/Info.plist

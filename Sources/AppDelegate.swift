@@ -43,6 +43,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item("Save", #selector(NSDocument.save(_:)), key: "s", in: file)
         item("Save As…", #selector(NSDocument.saveAs(_:)), key: "s", modifiers: [.command, .shift], in: file)
         item("Revert to Saved…", #selector(NSDocument.revertToSaved(_:)), in: file)
+        file.addItem(.separator())
+        item("Export as PDF…", #selector(DocumentWindowController.exportPDF(_:)), key: "e", modifiers: [.command, .shift], in: file)
+        item("Print…", #selector(DocumentWindowController.printMarkdown(_:)), key: "p", in: file)
 
         let edit = submenu("Edit", in: main)
         item("Undo", Selector(("undo:")), key: "z", in: edit)
