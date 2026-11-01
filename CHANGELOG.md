@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 - Add File → Export as PDF… (⇧⌘E) and Print… (⌘P). Both render the document with a light print layout: white pages, readable code blocks, tables that no longer clip, and wrapped long code lines.
 - ⌘1–⌘8 select tabs 1–8 and ⌘9 the last tab; Editor / Preview / Split move to ⌥1 / ⌥2 / ⌥3.
